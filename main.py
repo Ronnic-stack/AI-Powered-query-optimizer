@@ -3,13 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
 
-# Setup the AI
+# Setting up the AI
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 app = FastAPI()
 
-# Allow the frontend to talk to the backend
+# Allowing the frontend to talk to the backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
