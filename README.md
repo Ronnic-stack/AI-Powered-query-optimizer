@@ -4,7 +4,7 @@
 
 Database bottlenecks are a massive silent killer of application scale and compute budgets. A single bad nested subquery or missing index can bring an entire system to a crawl. This tool acts as an AI-powered Database Administrator that lives right in your browser—catching unoptimized code before it ever hits production.
 
-![alt text](image.png)
+<img width="2940" height="1726" alt="image" src="https://github.com/user-attachments/assets/d8937b48-8d26-4b26-8940-5b358ab8827f" />
 
 ## ✨ Key Features
 
@@ -29,4 +29,8 @@ It takes less than 2 minutes to spin up the local development environment.
 ### 1. Clone the Repository
 ```bash
 git clone [https://github.com/Ronnic-stack/AI-Powered-query-optimizer.git](https://github.com/Ronnic-stack/AI-Powered-query-optimizer.git)
+<<<<<<< HEAD
 cd AI-Powered-query-optimizer
+=======
+cd AI-Powered-query-optimizer
+>>>>>>> cf4699226bcf5f596a3bfb4d524ebbca3a09e9af
