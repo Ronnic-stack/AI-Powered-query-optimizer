@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Database Query Optimizer</title>
+    <style>
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            background-color: #020617; /* Slate 950 */
+            color: #e2e8f0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 3rem 1rem;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Glowing Orbs */
+        .background-orbs { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; pointer-events: none; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; animation: float 10s infinite alternate ease-in-out; }
+        .orb-1 { background: #4f46e5; width: 400px; height: 400px; top: 10%; left: 10%; }
+        .orb-2 { background: #9333ea; width: 350px; height: 350px; bottom: 10%; right: 10%; animation-delay: -5s; }
+        .orb-3 { background: #3b82f6; width: 300px; height: 300px; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.2; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(-40px) scale(1.05); }
+        }
+
+        /* Main Container */
+        main { width: 100%; max-width: 800px; position: relative; z-index: 10; display: flex; flex-direction: column; gap: 2rem; }
+
+        /* Header Styling */
+        header { text-align: center; animation: slideUp 0.6s ease-out; margin-bottom: 2rem; }
+        .icon-wrapper { display: inline-flex; padding: 12px; background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.2); border-radius: 16px; color: #818cf8; margin-bottom: 1rem; }
+        h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(to right, #818cf8, #c084fc, #60a5fa); -webkit-background-clip: text; color: transparent; letter-spacing: -0.05em; line-height: 1.2; }
+        p { color: #94a3b8; font-size: 1.125rem; line-height: 1.5; max-width: 600px; margin: 0 auto; }
+
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out 0.1s both;
+        }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Input Area */
+        label { display: block; font-size: 0.875rem; font-weight: 600; color: #a5b4fc; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        textarea {
+            width: 100%; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); color: #f8fafc; border-radius: 16px; padding: 1.25rem; font-family: monospace; font-size: 1rem; resize: vertical; min-height: 150px; outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        textarea:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2); }
+
+        /* Button Styling */
+        button {
+            width: 100%; margin-top: 1.5rem; background: linear-gradient(to right, #4f46e5, #7c3aed); color: white; border: none; border-radius: 16px; padding: 1.25rem; font-size: 1.125rem; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: transform 0.2s, box-shadow 0.2s, filter 0.2s; box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3); border: 1px solid rgba(255,255,255,0.1);
+        }
+        button:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 15px 25px rgba(79, 70, 229, 0.4); }
+        button:active { transform: translateY(0); }
+        button:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+        /* Loading Spinner */
+        .spinner { width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Result Card */
+        #resultCard { display: none; border-top: 4px solid #10b981; margin-top: 2rem; position: relative; overflow: hidden; }
+        .result-glow { position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(16, 185, 129, 0.2); filter: blur(40px); border-radius: 50%; }
+        .result-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .result-icon { background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 8px; border-radius: 12px; display: flex; }
+        .result-title { color: #34d399; font-size: 1.5rem; font-weight: 700; }
+        .result-content-box { background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 1.5rem; overflow-x: auto; }
+        #resultContent { color: #cbd5e1; font-family: monospace; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
+        .error-text { color: #f87171 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <main>
+        <header>
+            <div class="icon-wrapper">
+                <svg style="width:32px; height:32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <h1>AI-Powered Database Query Optimizer</h1>
+           <p class="text-lg text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">
+    Experience the next generation of database management. Our AI engine parses execution paths, identifies redundant subqueries, and enforces modern syntax standards in real-time. Drop your raw SQL below to generate high-velocity, optimized queries on the fly.
+</p>
+</header>
+        <section class="glass-panel">
+            <label for="sqlInput">Paste your inefficient SQL query:</label>
+            <textarea id="sqlInput" placeholder="SELECT * FROM users u JOIN orders o ON u.id = o.user_id WHERE u.status = 'active'..."></textarea>
+            
+            <button id="optimizeBtn" onclick="optimizeQuery()">
+                <span id="btnText">Optimize Query</span>
+                <span id="btnIcon">🚀</span>
+                <div id="loadingSpinner" class="spinner"></div>
+            </button>
+        </section>
+
+        <section id="resultCard" class="glass-panel">
+            <div class="result-glow"></div>
+            <div class="result-header">
+                <div class="result-icon">
+                    <svg style="width:24px; height:24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="result-title">Optimization Results</h3>
+            </div>
+            
+            <div class="result-content-box">
+                <div id="resultContent"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function optimizeQuery() {
+            const queryInput = document.getElementById('sqlInput');
+            const query = queryInput.value.trim();
+            const btn = document.getElementById('optimizeBtn');
+            const btnText = document.getElementById('btnText');
+            const btnIcon = document.getElementById('btnIcon');
+            const spinner = document.getElementById('loadingSpinner');
+            const resultCard = document.getElementById('resultCard');
+            const resultContent = document.getElementById('resultContent');
+
+            if (!query) {
+                queryInput.style.borderColor = '#ef4444';
+                setTimeout(() => queryInput.style.borderColor = 'rgba(255, 255, 255, 0.1)', 1000);
+                return;
+            }
+
+            btn.disabled = true;
+            btnText.innerText = "Analyzing Bottlenecks...";
+            btnIcon.style.display = 'none';
+            spinner.style.display = 'block';
+            resultCard.style.display = 'none';
+            resultContent.classList.remove('error-text');
+
+            try {
+                // Ensure your Python backend is running!
+                const response = await fetch('http://localhost:8000/optimize', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sql_query: query })
+                });
+
+                if (!response.ok) throw new Error(`HTTP error!`);
+
+                const data = await response.json();
+                resultContent.innerText = data.optimized_result;
+                resultCard.style.display = 'block';
+                resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            } catch (error) {
+                resultContent.innerText = "Error: Could not connect to the AI engine.\n\nPlease ensure your Python backend (main.py) is running on http://localhost:8000 in your VS Code terminal.";
+                resultContent.classList.add('error-text');
+                resultCard.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = "Optimize Query";
+                btnIcon.style.display = 'inline';
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
